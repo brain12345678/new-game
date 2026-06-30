@@ -850,7 +850,7 @@
 
                 // Movement
                 const forward = new THREE.Vector3(-Math.sin(gameCtx.yaw), 0, -Math.cos(gameCtx.yaw));
-                const right = new THREE.Vector3(forward.z, 0, -forward.x);
+                const right = new THREE.Vector3(-forward.z, 0, forward.x);
                 const moveZ = (gameCtx.keys.w ? 1 : 0) - (gameCtx.keys.s ? 1 : 0);
                 const moveX = (gameCtx.keys.d ? 1 : 0) - (gameCtx.keys.a ? 1 : 0);
                 const speed = 6.5;
