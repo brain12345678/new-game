@@ -36,7 +36,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle, transparent 25%, var(--dark-charcoal) 75%),
                 linear-gradient(rgba(18, 19, 20, 0.8) 50%, rgba(0, 0, 0, 0.9) 50%);
             background-size: 100% 100%, 100% 4px;
@@ -174,6 +174,100 @@
             box-shadow: 0 0 25px var(--bright-orange);
         }
 
+        /* --- Game Arena --- */
+        .game-arena {
+            margin-top: 60px;
+            width: 100%;
+            max-width: 600px;
+            background: rgba(28, 30, 33, 0.6);
+            border: 2px solid var(--army-green);
+            padding: 40px 30px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 102, 0, 0.05);
+
+            /* hidden by default, revealed via JS */
+            opacity: 0;
+            transform: translateY(-15px) scale(0.97);
+            max-height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-width: 0;
+            margin-top: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.6s ease,
+                        padding 0.5s ease, margin-top 0.5s ease, border-width 0.3s ease;
+        }
+
+        .game-arena.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            max-height: 400px;
+            padding: 40px 30px;
+            border-width: 2px;
+            margin-top: 60px;
+            pointer-events: auto;
+        }
+
+        .game-arena::before {
+            content: '// GAME_ARENA.EXE';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--dark-charcoal);
+            padding: 0 10px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--bright-orange);
+        }
+
+        .game-arena-title {
+            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 1.3rem;
+            color: var(--light-gray);
+            margin-bottom: 30px;
+        }
+
+        .game-arena-title::after {
+            content: '_';
+            color: var(--bright-orange);
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .game-arena-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .game-btn {
+            background: var(--steel-gray);
+            color: var(--light-gray);
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            font-size: 0.85rem;
+            padding: 14px 28px;
+            border: 1px solid var(--army-green);
+            cursor: pointer;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+        }
+
+        .game-btn:hover {
+            transform: scale(1.08);
+            border-color: var(--bright-orange);
+            color: #fff;
+            box-shadow: 0 0 18px var(--hud-glow);
+        }
+
         /* --- Intel / Features Section --- */
         .features {
             padding: 100px 5%;
@@ -255,6 +349,9 @@
             nav {
                 display: none; /* Keeps it clean for mobile without extra JS clutter */
             }
+            .game-arena {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
@@ -273,13 +370,38 @@
         <div class="hero-tag">// INTEL BRIEFING AVAILABLE</div>
         <h1>Lock In Your Next<br>Coding Operation</h1>
         <p>A high-octane framework built for developers who demand speed, tactical precision, and absolute dominance in production environments.</p>
-        <button class="btn" onclick="alert('Operation Initiated!')">Deploy Artifact</button>
+        <button class="btn" id="deploy-btn" onclick="deployGameArena()">Deploy Artifact</button>
+
+        <div class="game-arena" id="game-arena">
+            <div class="game-arena-title">Loading Game...</div>
+            <div class="game-arena-controls">
+                <button class="game-btn">Start</button>
+                <button class="game-btn">Pause</button>
+                <button class="game-btn">Reset</button>
+            </div>
+        </div>
     </section>
+
+    <script>
+        function deployGameArena() {
+            const arena = document.getElementById('game-arena');
+            const deployBtn = document.getElementById('deploy-btn');
+
+            arena.classList.add('is-visible');
+            deployBtn.textContent = 'Artifact Deployed';
+            deployBtn.disabled = true;
+
+            // Scroll the arena into view smoothly once it expands
+            setTimeout(() => {
+                arena.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 150);
+        }
+    </script>
 
     <section class="features" id="intel">
         <h2 class="section-title">Mission <span>Objectives</span></h2>
         <div class="grid">
-            
+
             <div class="card">
                 <span class="card-num">01 / SPEED</span>
                 <h3>Overkill Performance</h3>
