@@ -1,6 +1,3 @@
-Here is the complete, unified codebase with the camera attachment issue fixed. The camera is now explicitly added to the scene array right after building the composite weapon components, guaranteeing the gun model stays locked in your viewport.
-
-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -524,9 +521,10 @@ HTML
             container.insertBefore(renderer.domElement, overlay);
             const canvas = renderer.domElement;
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-            const dirLight = new THREE.DirectionalLight(0xff7700, 0.8);
-            dirLight.position.set(10, 20, 10);
+            // Direct bright directional light pointing toward player perspective
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(5, 15, 15);
             scene.add(dirLight);
 
             // Textures
@@ -564,27 +562,33 @@ HTML
                 scene.add(crate);
             }
 
-            // --- FIXED WEAPON SYSTEM INITIALIZATION ---
+            // --- FIXED: WEAPON VISIBILITY SYSTEM ---
+            // Changed materials to MeshLambertMaterial with ambient emissive colors to stand out
             const weaponGroup = new THREE.Group();
-            const metalMat = new THREE.MeshStandardMaterial({ color: 0x1f2226, roughness: 0.5, metalness: 0.8 });
-            const accentMat = new THREE.MeshBasicMaterial({ color: 0xff6600 });
+            const steelMat = new THREE.MeshLambertMaterial({ color: 0x555c66, emissive: 0x1c1e22 });
+            const neonMat = new THREE.MeshBasicMaterial({ color: 0xff6600 });
             
-            const receiver = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.08, 0.3), metalMat);
+            const receiver = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.1, 0.35), steelMat);
             receiver.position.set(0, 0, 0);
-            const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.35, 8), metalMat);
+            
+            const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4, 8), steelMat);
             barrel.rotation.x = Math.PI / 2;
-            barrel.position.set(0, 0.01, -0.3);
-            const mag = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.15, 0.05), metalMat);
-            mag.position.set(0, -0.09, -0.1);
-            const laser = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.1), accentMat);
-            laser.position.set(0, 0.04, -0.2);
+            barrel.position.set(0, 0.02, -0.35);
+            
+            const mag = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.18, 0.07), steelMat);
+            mag.position.set(0, -0.12, -0.1);
+            
+            const scope = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.04, 0.15), steelMat);
+            scope.position.set(0, 0.08, -0.05);
+            
+            const laser = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.015, 0.15), neonMat);
+            laser.position.set(0, 0.02, -0.4);
 
-            weaponGroup.add(receiver, barrel, mag, laser);
+            weaponGroup.add(receiver, barrel, mag, scope, laser);
             
-            // Adjust coordinates so it projects cleanly into the camera's clipping plane
-            weaponGroup.position.set(0.3, -0.25, -0.6); 
+            // Repositioned closer inside camera view frustum so aspect-ratio changes don't hide it
+            weaponGroup.position.set(0.2, -0.22, -0.45); 
             
-            // Critical: Add weapon to camera, THEN explicitly add camera to the scene
             camera.add(weaponGroup);
             scene.add(camera);
 
@@ -599,6 +603,13 @@ HTML
                 startGrace: 1.5,
                 bobTimer: 0
             };
+
+            // Force quick sizing calculations right out of the gate
+            const initialW = container.clientWidth;
+            const initialH = container.clientHeight;
+            camera.aspect = initialW / initialH;
+            camera.updateProjectionMatrix();
+            renderer.setSize(initialW, initialH);
 
             for(let i=0; i<4; i++) spawnBot();
 
@@ -795,7 +806,7 @@ HTML
                 }
             }
 
-            gameCtx.weaponGroup.position.z += (-0.6 - gameCtx.weaponGroup.position.z) * 0.15;
+            gameCtx.weaponGroup.position.z += (-0.45 - gameCtx.weaponGroup.position.z) * 0.15;
 
             updateBullets(delta);
 
@@ -814,11 +825,11 @@ HTML
                     gameCtx.playerPos.addScaledVector(right, moveX * speed * delta);
                     
                     gameCtx.bobTimer += delta * 12;
-                    gameCtx.weaponGroup.position.y = -0.25 + Math.sin(gameCtx.bobTimer) * 0.015;
-                    gameCtx.weaponGroup.position.x = 0.3 + Math.cos(gameCtx.bobTimer * 0.5) * 0.01;
+                    gameCtx.weaponGroup.position.y = -0.22 + Math.sin(gameCtx.bobTimer) * 0.015;
+                    gameCtx.weaponGroup.position.x = 0.2 + Math.cos(gameCtx.bobTimer * 0.5) * 0.01;
                 } else {
-                    gameCtx.weaponGroup.position.y += (-0.25 - gameCtx.weaponGroup.position.y) * 0.1;
-                    gameCtx.weaponGroup.position.x += (0.3 - gameCtx.weaponGroup.position.x) * 0.1;
+                    gameCtx.weaponGroup.position.y += (-0.22 - gameCtx.weaponGroup.position.y) * 0.1;
+                    gameCtx.weaponGroup.position.x += (0.2 - gameCtx.weaponGroup.position.x) * 0.1;
                 }
                 
                 gameCtx.playerPos.x = Math.max(-ARENA_HALF + 1.2, Math.min(ARENA_HALF - 1.2, gameCtx.playerPos.x));
