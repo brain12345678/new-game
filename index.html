@@ -793,4 +793,35 @@
                 });
             }
 
-            cam.position.set(gameCtx.playerPos.x, EYE_HEIGHT, gameCtx.playerPos
+            cam.position.set(gameCtx.playerPos.x, EYE_HEIGHT, gameCtx.playerPos.z);
+            gameCtx.renderer.render(gameCtx.scene, gameCtx.camera);
+        }
+
+        function endGame() {
+            gameCtx.over = true;
+            document.getElementById('final-score').textContent = 'KILLS: ' + gameCtx.kills;
+            document.getElementById('game-over-overlay').style.display = 'flex';
+            if (document.pointerLockElement === gameCtx.canvas) document.exitPointerLock();
+        }
+
+        function restartGame() {
+            cancelAnimationFrame(gameCtx.animationId);
+            gameCtx.cleanup();
+            gameCtx.bots.forEach((b) => gameCtx.scene.remove(b.group));
+            gameCtx.bullets.forEach((b) => {
+                gameCtx.scene.remove(b.mesh);
+                b.mesh.geometry.dispose();
+                b.mesh.material.dispose();
+            });
+            gameCtx.renderer.dispose();
+            const container = document.getElementById('game-canvas-container');
+            const canvas = container.querySelector('canvas');
+            if (canvas) container.removeChild(canvas);
+            
+            initGame();
+        }
+
+        document.getElementById('restart-btn').addEventListener('click', restartGame);
+    </script>
+</body>
+</html>
