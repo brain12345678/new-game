@@ -174,59 +174,54 @@
             box-shadow: 0 0 25px var(--bright-orange);
         }
 
-        /* --- Game Arena --- */
+        /* --- Game Arena (Now Fullscreen when visible) --- */
         .game-arena {
-            margin-top: 60px;
-            width: 100%;
-            max-width: 600px;
-            background: rgba(28, 30, 33, 0.6);
-            border: 2px solid var(--army-green);
-            padding: 40px 30px;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 102, 0, 0.05);
-
-            /* hidden by default, revealed via JS */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--dark-charcoal);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            
+            /* Hidden setup state */
             opacity: 0;
-            transform: translateY(-15px) scale(0.97);
-            max-height: 0;
-            overflow: hidden;
-            padding-top: 0;
-            padding-bottom: 0;
-            border-width: 0;
-            margin-top: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.6s ease,
-                        padding 0.5s ease, margin-top 0.5s ease, border-width 0.3s ease;
+            transition: opacity 0.4s ease;
         }
 
         .game-arena.is-visible {
             opacity: 1;
-            transform: translateY(0) scale(1);
-            max-height: 400px;
-            padding: 40px 30px;
-            border-width: 2px;
-            margin-top: 60px;
             pointer-events: auto;
         }
 
         .game-arena::before {
-            content: '// GAME_ARENA.EXE';
+            content: '// FULLSCREEN_TACTICAL_ARENA.EXE';
             position: absolute;
-            top: -12px;
-            left: 20px;
-            background: var(--dark-charcoal);
-            padding: 0 10px;
+            top: 20px;
+            left: 30px;
             font-family: monospace;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             letter-spacing: 2px;
             color: var(--bright-orange);
+        }
+
+        .game-arena-loading {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
         }
 
         .game-arena-title {
             font-family: monospace;
             text-transform: uppercase;
             letter-spacing: 3px;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             color: var(--light-gray);
             margin-bottom: 10px;
         }
@@ -244,7 +239,7 @@
         /* --- Loading Bar --- */
         .loading-bar-track {
             width: 100%;
-            height: 6px;
+            height: 8px;
             margin-top: 25px;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--army-green);
@@ -260,19 +255,24 @@
         }
 
         /* --- Game HUD & Canvas --- */
+        .game-arena-play {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
         .game-hud {
             display: flex;
             justify-content: space-between;
             font-family: monospace;
-            font-size: 0.8rem;
+            font-size: 1.1rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             color: var(--light-gray);
-            margin-bottom: 15px;
-        }
-
-        .game-hud span:last-child {
-            color: var(--army-green);
+            padding: 15px 10px;
+            background: rgba(28, 30, 33, 0.8);
+            border-bottom: 1px solid var(--army-green);
         }
 
         .game-hud .hud-accent {
@@ -283,8 +283,8 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
             transform: translate(-50%, -50%);
             pointer-events: none;
             z-index: 5;
@@ -316,28 +316,27 @@
 
         .aim-hint {
             position: absolute;
-            top: 10px;
-            left: 12px;
+            top: 15px;
+            left: 20px;
             font-family: monospace;
-            font-size: 0.65rem;
+            font-size: 0.8rem;
             letter-spacing: 1px;
             text-transform: uppercase;
-            color: rgba(196, 197, 198, 0.65);
+            color: rgba(196, 197, 198, 0.75);
             z-index: 4;
             pointer-events: none;
-        }
-
-        #game-canvas-container.is-aiming {
-            cursor: none;
         }
 
         #game-canvas-container {
             position: relative;
             width: 100%;
-            height: 360px;
-            border: 1px solid var(--army-green);
+            flex-grow: 1;
             overflow: hidden;
             background: #000;
+        }
+
+        #game-canvas-container.is-aiming {
+            cursor: none;
         }
 
         #game-canvas-container canvas {
@@ -349,18 +348,19 @@
         .game-over-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(18, 19, 20, 0.92);
+            background: rgba(18, 19, 20, 0.95);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
+            z-index: 10;
         }
 
         .game-over-title {
-            font-size: 1.6rem;
+            font-size: 2.5rem;
             font-weight: 900;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             color: var(--bright-orange);
             text-transform: uppercase;
             text-shadow: 0 0 15px var(--bright-orange);
@@ -368,6 +368,7 @@
 
         #final-score {
             font-family: monospace;
+            font-size: 1.3rem;
             letter-spacing: 1px;
             color: var(--light-gray);
         }
@@ -378,8 +379,8 @@
             text-transform: uppercase;
             font-weight: bold;
             letter-spacing: 1.5px;
-            font-size: 0.85rem;
-            padding: 14px 28px;
+            font-size: 0.95rem;
+            padding: 16px 32px;
             border: 1px solid var(--army-green);
             cursor: pointer;
             transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
@@ -390,95 +391,6 @@
             border-color: var(--bright-orange);
             color: #fff;
             box-shadow: 0 0 18px var(--hud-glow);
-        }
-
-        /* --- Intel / Features Section --- */
-        .features {
-            padding: 100px 5%;
-            background: var(--steel-gray);
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .section-title {
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-size: 2rem;
-            margin-bottom: 60px;
-            color: #fff;
-        }
-
-        .section-title span {
-            color: var(--bright-orange);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: rgba(18, 19, 20, 0.5);
-            border-left: 4px solid var(--army-green);
-            padding: 40px 30px;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            border-left-color: var(--bright-orange);
-            background: rgba(18, 19, 20, 0.8);
-            transform: translateY(-5px);
-        }
-
-        .card-num {
-            font-family: monospace;
-            color: var(--bright-orange);
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .card h3 {
-            text-transform: uppercase;
-            color: #fff;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-
-        .card p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #8a8d91;
-        }
-
-        /* --- Footer --- */
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            font-family: monospace;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            color: var(--army-green);
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-
-        /* --- Responsive Adjustments --- */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.8rem;
-            }
-            nav {
-                display: none; /* Keeps it clean for mobile without extra JS clutter */
-            }
-            .game-arena {
-                padding: 30px 20px;
-            }
-            #game-canvas-container {
-                height: 260px;
-            }
         }
     </style>
 </head>
@@ -501,7 +413,7 @@
 
         <div class="game-arena" id="game-arena">
             <div class="game-arena-loading" id="game-loading">
-                <div class="game-arena-title">Loading Game...</div>
+                <div class="game-arena-title">Loading Tactical Simulation...</div>
                 <div class="loading-bar-track">
                     <div class="loading-bar-fill" id="loading-bar-fill"></div>
                 </div>
@@ -536,21 +448,6 @@
             deployBtn.textContent = 'Artifact Deployed';
             deployBtn.disabled = true;
 
-            setTimeout(() => {
-                arena.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 150);
-
-            // Once the reveal animation finishes, let the box grow freely
-            // so it isn't clipped once the 3D canvas appears.
-            const onEnd = (e) => {
-                if (e.propertyName === 'max-height') {
-                    arena.style.maxHeight = 'none';
-                    arena.style.overflow = 'visible';
-                    arena.removeEventListener('transitionend', onEnd);
-                }
-            };
-            arena.addEventListener('transitionend', onEnd);
-
             runLoadingSequence();
         }
 
@@ -565,16 +462,16 @@
                     clearInterval(interval);
                     setTimeout(() => {
                         document.getElementById('game-loading').style.display = 'none';
-                        document.getElementById('game-play').style.display = 'block';
+                        document.getElementById('game-play').style.display = 'flex';
                         initGame();
                     }, 300);
                 } else {
                     fill.style.width = progress + '%';
                 }
-            }, 180);
+            }, 100);
         }
 
-        /* ---------- THREE.JS FPS VS BOTS ---------- */
+        /* ---------- THREE.JS FPS ENGINE ---------- */
         let gameCtx = null;
         const ARENA_HALF = 22;
         const EYE_HEIGHT = 1.6;
@@ -616,7 +513,7 @@
             grid.position.y = 0.01;
             scene.add(grid);
 
-            // Perimeter walls (visual boundary)
+            // Perimeter walls
             const wallMat = new THREE.MeshStandardMaterial({ color: 0x1c1e21 });
             const wallGeoNS = new THREE.BoxGeometry(ARENA_HALF * 2, 3, 0.5);
             const wallGeoEW = new THREE.BoxGeometry(0.5, 3, ARENA_HALF * 2);
@@ -662,8 +559,6 @@
             spawnBot();
             spawnBot();
 
-            /* --- Input handlers. Hover-aim always works; Pointer Lock layers on
-                 top for a true locked-cursor feel where the browser allows it. --- */
             function onKeyDown(e) {
                 const k = e.key.toLowerCase();
                 if (k in gameCtx.keys) gameCtx.keys[k] = true;
@@ -677,7 +572,7 @@
                 container.classList.add('is-aiming');
             }
             function onMouseLeave() {
-                if (document.pointerLockElement === canvas) return; // stay aiming while locked
+                if (document.pointerLockElement === canvas) return;
                 gameCtx.aiming = false;
                 container.classList.remove('is-aiming');
             }
@@ -704,28 +599,34 @@
                     hint.textContent = 'Hover To Aim · Click To Fire · WASD Move';
                 }
             }
-            function onPointerLockError() {
-                // Locking isn't available here (e.g. an embedded preview) — hover-aim still works.
+            
+            function onWindowResize() {
+                if (!gameCtx) return;
+                const w = container.clientWidth;
+                const h = container.clientHeight;
+                gameCtx.camera.aspect = w / h;
+                gameCtx.camera.updateProjectionMatrix();
+                gameCtx.renderer.setSize(w, h);
             }
 
             window.addEventListener('keydown', onKeyDown);
             window.addEventListener('keyup', onKeyUp);
+            window.addEventListener('resize', onWindowResize);
             container.addEventListener('mouseenter', onMouseEnter);
             container.addEventListener('mouseleave', onMouseLeave);
             container.addEventListener('mousemove', onMouseMove);
             container.addEventListener('mousedown', onMouseDown);
             document.addEventListener('pointerlockchange', onPointerLockChange);
-            document.addEventListener('pointerlockerror', onPointerLockError);
 
             gameCtx.cleanup = () => {
                 window.removeEventListener('keydown', onKeyDown);
                 window.removeEventListener('keyup', onKeyUp);
+                window.removeEventListener('resize', onWindowResize);
                 container.removeEventListener('mouseenter', onMouseEnter);
                 container.removeEventListener('mouseleave', onMouseLeave);
                 container.removeEventListener('mousemove', onMouseMove);
                 container.removeEventListener('mousedown', onMouseDown);
                 document.removeEventListener('pointerlockchange', onPointerLockChange);
-                document.removeEventListener('pointerlockerror', onPointerLockError);
                 if (document.pointerLockElement === canvas) document.exitPointerLock();
             };
 
@@ -848,15 +749,20 @@
             if (!gameCtx.over) {
                 if (gameCtx.startGrace > 0) gameCtx.startGrace -= delta;
 
-                // Movement
-                const forward = new THREE.Vector3(-Math.sin(gameCtx.yaw), 0, -Math.cos(gameCtx.yaw));
-                const right = new THREE.Vector3(-forward.z, 0, forward.x);
+                // FIXED STRAFING MOVEMENT:
+                // Base forward look vector projected onto horizontal plane
+                const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), gameCtx.yaw).normalize();
+                // Perfectly perpendicular vector for horizontal sideways adjustments
+                const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), gameCtx.yaw).normalize();
+                
                 const moveZ = (gameCtx.keys.w ? 1 : 0) - (gameCtx.keys.s ? 1 : 0);
                 const moveX = (gameCtx.keys.d ? 1 : 0) - (gameCtx.keys.a ? 1 : 0);
                 const speed = 6.5;
 
                 gameCtx.playerPos.addScaledVector(forward, moveZ * speed * delta);
                 gameCtx.playerPos.addScaledVector(right, moveX * speed * delta);
+                
+                // Arena Bounds Enforcement
                 gameCtx.playerPos.x = Math.max(-ARENA_HALF + 1, Math.min(ARENA_HALF - 1, gameCtx.playerPos.x));
                 gameCtx.playerPos.z = Math.max(-ARENA_HALF + 1, Math.min(ARENA_HALF - 1, gameCtx.playerPos.z));
 
@@ -887,67 +793,4 @@
                 });
             }
 
-            cam.position.set(gameCtx.playerPos.x, EYE_HEIGHT, gameCtx.playerPos.z);
-
-            gameCtx.renderer.render(gameCtx.scene, gameCtx.camera);
-        }
-
-        function endGame() {
-            gameCtx.over = true;
-            document.getElementById('final-score').textContent = 'KILLS: ' + gameCtx.kills;
-            document.getElementById('game-over-overlay').style.display = 'flex';
-            if (document.pointerLockElement === gameCtx.canvas) document.exitPointerLock();
-        }
-
-        function restartGame() {
-            cancelAnimationFrame(gameCtx.animationId);
-            gameCtx.cleanup();
-            gameCtx.bots.forEach((b) => gameCtx.scene.remove(b.group));
-            gameCtx.bullets.forEach((b) => {
-                gameCtx.scene.remove(b.mesh);
-                b.mesh.geometry.dispose();
-                b.mesh.material.dispose();
-            });
-            gameCtx.renderer.dispose();
-            const container = document.getElementById('game-canvas-container');
-            const canvas = container.querySelector('canvas');
-            if (canvas) container.removeChild(canvas);
-            container.classList.remove('is-aiming');
-            gameCtx = null;
-            initGame();
-        }
-
-        document.getElementById('restart-btn').addEventListener('click', restartGame);
-    </script>
-
-    <section class="features" id="intel">
-        <h2 class="section-title">Mission <span>Objectives</span></h2>
-        <div class="grid">
-
-            <div class="card">
-                <span class="card-num">01 / SPEED</span>
-                <h3>Overkill Performance</h3>
-                <p>Engineered to bypass bloat. Run your builds at lightning speeds with zero tactical lag blocking your deployment pipeline.</p>
-            </div>
-
-            <div class="card">
-                <span class="card-num">02 / SECURITY</span>
-                <h3>Flak Jacket Armor</h3>
-                <p>Hardened out of the box against common vectors. Safeguard your code infrastructure with built-in ironclad protocols.</p>
-            </div>
-
-            <div class="card">
-                <span class="card-num">03 / UI</span>
-                <h3>HUD Optimization</h3>
-                <p>A beautifully grim, high-contrast environment tailored for late-night sessions where focus is paramount.</p>
-            </div>
-
-        </div>
-    </section>
-
-    <footer>
-        &copy; 2026 PROJECT:BREACH. ALL RIGHTS RESERVED. SECURE CONNECTION ESTABLISHED.
-    </footer>
-
-</body>
-</html>
+            cam.position.set(gameCtx.playerPos.x, EYE_HEIGHT, gameCtx.playerPos
